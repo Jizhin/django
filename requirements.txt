@@ -1,0 +1,4 @@
+Django==3.0
+djangorestframework<=3.0
+psycopg2<=2.9.3  # Only needed if using PostgreSQL
+mysqlclient<=2.1.0  # Only needed if using MySQL
