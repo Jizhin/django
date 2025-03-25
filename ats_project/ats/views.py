@@ -7,7 +7,6 @@ from .serializers import CandidateSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.db.models import Value, IntegerField
-from django.db.models.functions import Length
 
 class CandidateCreateAPIView(APIView):
     """ Create a new candidate """
