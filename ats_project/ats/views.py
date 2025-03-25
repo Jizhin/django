@@ -6,6 +6,8 @@ from .models import Candidate
 from .serializers import CandidateSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+from django.db.models import Value, IntegerField
+from django.db.models.functions import Length
 
 class CandidateCreateAPIView(APIView):
     """ Create a new candidate """
@@ -51,7 +53,17 @@ class CandidateSearchAPIView(APIView):
         if not search_query:
             candidates = Candidate.objects.all()
         else:
-            candidates = Candidate.objects.filter(search_query)
+            query_words = search_query.lower().split()
+            candidates = Candidate.objects.all()
+
+            # Calculate relevance score based on word matches
+            candidates = candidates.annotate(
+                relevance=sum(
+                    Value(1, output_field=IntegerField())
+                    for word in query_words
+                    if word in candidates.model.name.lower()
+                )
+            ).filter(relevance__gt=0).order_by('-relevance')
 
         serializer = CandidateSerializer(candidates, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
